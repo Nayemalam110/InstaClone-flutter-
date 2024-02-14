@@ -4,6 +4,8 @@ import 'package:insta_clone/firebase_options.dart';
 import 'package:insta_clone/responsive/mobile_screen_layout.dart';
 import 'package:insta_clone/responsive/responsive_layout.dart';
 import 'package:insta_clone/responsive/web_screen_layout.dart';
+import 'package:insta_clone/screens/login_screen.dart';
+import 'package:insta_clone/screens/signup_screen.dart';
 import 'package:insta_clone/utils/colors.dart';
 
 Future<void> main() async {
@@ -25,8 +27,13 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData.dark()
             .copyWith(scaffoldBackgroundColor: mobileBackgroundColor),
-        home: ResponsiveLayout(
-            mobileScreenLayout: MobileScreenLayout(),
-            webScreenLayout: WebScreenLayout()));
+        home: SignupScreen()
+
+        //LoginScreen()
+        //  const ResponsiveLayout(
+        //     mobileScreenLayout: MobileScreenLayout(),
+        //     webScreenLayout: WebScreenLayout())
+
+        );
   }
 }
