@@ -3,6 +3,10 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:insta_clone/resources/auth_methods.dart';
+import 'package:insta_clone/responsive/mobile_screen_layout.dart';
+import 'package:insta_clone/responsive/responsive_layout.dart';
+import 'package:insta_clone/responsive/web_screen_layout.dart';
+import 'package:insta_clone/screens/login_screen.dart';
 import 'package:insta_clone/utils/colors.dart';
 import 'package:insta_clone/utils/utils.dart';
 import 'package:insta_clone/widgets/text_field_input.dart';
@@ -57,12 +61,27 @@ class _SignupScreenState extends State<SignupScreen> {
         bio: _bioController.text,
         file: image!);
     if (res != "success") {
+      setState(() {
+        isLoading = false;
+      });
       showSnackBar(con, res);
     } else {
       clearText();
+      if (context.mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) => const ResponsiveLayout(
+                mobileScreenLayout: MobileScreenLayout(),
+                webScreenLayout: WebScreenLayout(),
+              ),
+            ),
+            (route) => false);
+
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
-    isLoading = false;
-    setState(() {});
   }
 
   @override
@@ -167,6 +186,32 @@ class _SignupScreenState extends State<SignupScreen> {
             Flexible(
               child: Container(),
               flex: 2,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  child: const Text("Have an account?"),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                ),
+                GestureDetector(
+                  onTap: () => Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (context) => LoginScreen(),
+                    ),
+                  ),
+                  child: Container(
+                    child: const Text(
+                      " Sign in",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 12,
             ),
           ],
         ),
