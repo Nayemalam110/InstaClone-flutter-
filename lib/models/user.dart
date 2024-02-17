@@ -27,4 +27,21 @@ class User {
         "followers": followers,
         "following": following,
       };
+  static User fromSnap(DocumentSnapshot snap) {
+    Map<String, dynamic>? snapshot = snap.data() as Map<String, dynamic>?;
+    // var snapshot = snap.data() as Map<String, dynamic>;
+    if (snapshot == null) {
+      print('Snap data is Null');
+      throw Exception('DocumentSnapshot is null or empty');
+    }
+    return User(
+      username: snapshot["username"],
+      uid: snapshot["uid"],
+      email: snapshot["email"],
+      photoUrl: snapshot["photoUrl"],
+      bio: snapshot["bio"],
+      followers: snapshot["followers"],
+      following: snapshot["following"],
+    );
+  }
 }

@@ -86,4 +86,54 @@ class AuthMethods {
   Future<void> signOut() async {
     await _auth.signOut();
   }
+
+  //get user details
+
+  Future<Map<String, dynamic>?> getUserD4etails() async {
+    Map<String, dynamic>? userData;
+    var uid = _auth.currentUser!.uid;
+    try {
+      DocumentSnapshot documentSnapshot =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+      if (documentSnapshot.exists) {
+        userData = documentSnapshot.data() as Map<String, dynamic>;
+      } else {
+        print('Document with UID $uid does not exist.');
+      }
+    } catch (e) {
+      // Handle error
+      print('Error fetching data: $e');
+    }
+
+    return userData;
+  }
+
+  Future<model.User> getUserDetails() async {
+    User currentUser = _auth.currentUser!;
+
+    DocumentSnapshot documentSnapshot =
+        await _firebaseFirestore.collection('user').doc(currentUser.uid).get();
+
+    return model.User.fromSnap(documentSnapshot);
+  }
+
+  //testing area
+  Future<List<Map<String, dynamic>>> fetchDataFromFirestore() async {
+    List<Map<String, dynamic>> dataList = [];
+
+    try {
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('user').get();
+
+      querySnapshot.docs.forEach((doc) {
+        dataList.add(doc.data() as Map<String, dynamic>);
+      });
+    } catch (e) {
+      // Handle error
+      print('Error fetching data: $e');
+    }
+
+    return dataList;
+  }
 }
