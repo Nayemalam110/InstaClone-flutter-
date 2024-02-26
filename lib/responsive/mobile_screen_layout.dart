@@ -66,6 +66,7 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
         controller: _pageController,
         onPageChanged: onPageChanged,
         children: homeScreenItems,
+        physics: NeverScrollableScrollPhysics(),
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
