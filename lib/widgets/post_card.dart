@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:insta_clone/provider/user_provider.dart';
 import 'package:insta_clone/resources/firestore_methods.dart';
+import 'package:insta_clone/screens/comment_screen.dart';
 import 'package:insta_clone/utils/colors.dart';
+import 'package:insta_clone/utils/utils.dart';
 import 'package:insta_clone/widgets/like%20_animation.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +21,41 @@ class PostCard extends StatefulWidget {
 
 class _PostCardState extends State<PostCard> {
   bool isLikeAnimating = false;
+  int commentLen = 0;
+  @override
+  void initState() {
+    super.initState();
+    //fetchCommentLen();
+  }
+
+  fetchCommentLen() async {
+    try {
+      QuerySnapshot snap = await FirebaseFirestore.instance
+          .collection('posts')
+          .doc(widget.snap['postId'])
+          .collection('comments')
+          .get();
+      commentLen = snap.docs.length;
+    } catch (err) {
+      showSnackBar(
+        context,
+        err.toString(),
+      );
+    }
+    setState(() {});
+  }
+
+  deletePost(String postId) async {
+    try {
+      await FireStoreMethods().deletePost(postId);
+    } catch (err) {
+      showSnackBar(
+        context,
+        err.toString(),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final User user = Provider.of<UserProvider>(context).getUser;
@@ -131,7 +169,17 @@ class _PostCardState extends State<PostCard> {
                         ? Icon(Icons.favorite, color: Colors.red)
                         : Icon(Icons.favorite_outline)),
               ),
-              IconButton(onPressed: () {}, icon: Icon(Icons.message)),
+              IconButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => CommentsScreen(
+                          postId: widget.snap['postId'].toString(),
+                        ),
+                      ),
+                    );
+                  },
+                  icon: Icon(Icons.message)),
               IconButton(onPressed: () {}, icon: Icon(Icons.send)),
               Expanded(
                   child: Align(
@@ -185,18 +233,38 @@ class _PostCardState extends State<PostCard> {
                     ),
                   ),
                 ),
-                InkWell(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: Text(
-                        'View all 20 comments',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: secondaryColor,
-                        ),
-                      ),
-                    ),
-                    onTap: () {}),
+                StreamBuilder(
+                    stream: FirebaseFirestore.instance
+                        .collection('posts')
+                        .doc(widget.snap['postId'])
+                        .collection('comments')
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        commentLen = snapshot.data!.docs.length;
+                        return InkWell(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 4),
+                              child: Text(
+                                'view all $commentLen comments',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: secondaryColor,
+                                ),
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => CommentsScreen(
+                                    postId: widget.snap['postId'].toString(),
+                                  ),
+                                ),
+                              );
+                            });
+                      } else
+                        return Text("");
+                    }),
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Text(
