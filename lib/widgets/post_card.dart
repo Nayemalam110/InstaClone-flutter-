@@ -8,7 +8,6 @@ import 'package:insta_clone/utils/utils.dart';
 import 'package:insta_clone/widgets/like%20_animation.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
 import '../models/user.dart';
 
 class PostCard extends StatefulWidget {
@@ -95,7 +94,13 @@ class _PostCardState extends State<PostCard> {
                           shrinkWrap: true,
                           children: ['Delete']
                               .map((e) => InkWell(
-                                    onTap: () {},
+                                    onTap: () {
+                                      deletePost(
+                                        widget.snap['postId'].toString(),
+                                      );
+                                      // remove the dialog box
+                                      Navigator.of(context).pop();
+                                    },
                                     child: Container(
                                       padding: EdgeInsets.symmetric(
                                           vertical: 12, horizontal: 16),
